@@ -4,7 +4,9 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { categories, products } from "@/lib/products";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { productsQueryOptions } from "@/lib/catalogue.functions";
+import { categories, toProduct } from "@/lib/products";
 
 const searchSchema = z.object({ category: z.string().catch("all"), q: z.string().catch("") });
 export const Route = createFileRoute("/catalogue")({
@@ -16,6 +18,9 @@ export const Route = createFileRoute("/catalogue")({
     { property: "og:description", content: "Browse premium Diwali gifts, diyas, festive décor and home fragrances." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ]}),
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
+  errorComponent: ({ error }) => <div className="section-wrap py-24 text-center" role="alert">{error.message}</div>,
+  notFoundComponent: () => <div className="section-wrap py-24 text-center">Catalogue not found.</div>,
   component: CataloguePage,
 });
 
