@@ -27,7 +27,8 @@ export const Route = createFileRoute("/catalogue")({
 function CataloguePage() {
   const { category, q } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const filtered = products.filter((p) => (category === "all" || p.category.toLowerCase() === category) && p.name.toLowerCase().includes(q.toLowerCase()));
+  const { data: rows } = useSuspenseQuery(productsQueryOptions);
+  const filtered = rows.map(toProduct).filter((p) => (category === "all" || p.category.toLowerCase() === category) && p.name.toLowerCase().includes(q.toLowerCase()));
   return <div className="section-wrap pt-14 sm:pt-20">
     <div className="max-w-3xl"><p className="eyebrow">Diwali 2026</p><h1 className="mt-4 font-display text-5xl sm:text-7xl">The festive catalogue</h1><p className="mt-5 text-muted-foreground">Objects to gift, gather around and glow beside.</p></div>
     <div className="mt-10 grid gap-4 border-y border-border py-5 lg:grid-cols-[1fr_22rem] lg:items-center">

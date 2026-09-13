@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { AvailabilityBadge } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
-import { formatPrice, products } from "@/lib/products";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { productsQueryOptions } from "@/lib/catalogue.functions";
+import { formatPrice, toProduct } from "@/lib/products";
 
 export const Route = createFileRoute("/products/$productId")({
   head: () => ({ meta: [
