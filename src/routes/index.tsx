@@ -28,7 +28,9 @@ export const Route = createFileRoute("/")({
 
 // IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
-  const featured = products.filter((product) => product.featured);
+  const { data: rows } = useSuspenseQuery(productsQueryOptions);
+  const all = rows.map(toProduct);
+  const featured = all.filter((product) => product.featured).slice(0, 3);
   return (
     <>
       <section className="relative isolate min-h-[calc(100svh-4.5rem)] overflow-hidden">
