@@ -4,7 +4,9 @@ import { ArrowRight, Flower2, Gift, Lamp } from "lucide-react";
 import heroImage from "@/assets/diwali-hero.jpg";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { productsQueryOptions } from "@/lib/catalogue.functions";
+import { toProduct } from "@/lib/products";
 
 // No head() here: the home route inherits title/description/og/twitter from
 // __root.tsx, and ships no og:image so serve-time hosting can inject the
@@ -18,6 +20,9 @@ export const Route = createFileRoute("/")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
   ]}),
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
+  errorComponent: ({ error }) => <div className="section-wrap py-24 text-center" role="alert">{error.message}</div>,
+  notFoundComponent: () => <div className="section-wrap py-24 text-center">Page not found.</div>,
   component: Index,
 });
 
