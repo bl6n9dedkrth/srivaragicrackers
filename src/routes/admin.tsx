@@ -30,7 +30,7 @@ function AdminPage() {
   const save = () => {
     if (!draft.name.trim()) return;
     if (editing) setItems((all) => all.map((item) => item.id === editing.id ? {...item, ...draft, image: preview || item.image} : item));
-    else setItems((all) => [{ id: `demo-${Date.now()}`, ...draft, longDescription: draft.description, image: preview || initialProducts[0].image }, ...all]);
+    else setItems((all) => [{ id: `demo-${Date.now()}`, ...draft, longDescription: draft.description, image: preview || initialProducts[0]?.image || "" }, ...all]);
     close();
   };
   const handleFile = (file?: File) => { if (file) { const reader = new FileReader(); reader.onload = () => typeof reader.result === "string" && setPreview(reader.result); reader.readAsDataURL(file); } };

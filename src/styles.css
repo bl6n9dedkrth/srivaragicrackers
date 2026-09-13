@@ -161,7 +161,7 @@
 @utility section-heading { display: grid; gap: 1rem; align-items: end; h2 { margin-top: 1rem; font-family: var(--font-display); font-size: 2.5rem; line-height: 1.1; } p { max-width: 27rem; color: var(--muted-foreground); font-size: .875rem; line-height: 1.5rem; } @media (min-width: 768px) { grid-template-columns: minmax(0,1fr) auto; h2 { font-size: 3.25rem; } } }
 @utility nav-link { color: var(--muted-foreground); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; transition: color .2s; &:hover { color: var(--foreground); } }
 @utility nav-link-active { color: var(--primary); }
-@utility bg-hero-overlay { background: linear-gradient(90deg, oklch(0.1 0.025 257 / .98) 0%, oklch(0.11 0.03 257 / .88) 36%, oklch(0.11 0.03 257 / .18) 70%), linear-gradient(0deg, oklch(0.1 0.03 257 / .7) 0%, transparent 42%); }
+@utility bg-hero-overlay { background: linear-gradient(90deg, oklch(0.1 0.025 257) 0%, oklch(0.1 0.025 257) 34%, oklch(0.11 0.03 257 / .52) 58%, oklch(0.11 0.03 257 / .12) 78%), linear-gradient(0deg, oklch(0.1 0.03 257 / .78) 0%, transparent 48%); }
 @utility shadow-gold { box-shadow: 0 12px 35px -16px color-mix(in oklab, var(--primary) 55%, transparent); }
 @utility status-available { display: inline-flex; border: 1px solid oklch(0.58 0.12 158 / .5); border-radius: 999px; padding: .2rem .55rem; color: oklch(0.78 0.14 158); font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
 @utility status-unavailable { display: inline-flex; border: 1px solid oklch(0.55 0.16 28 / .5); border-radius: 999px; padding: .2rem .55rem; color: oklch(0.72 0.14 30); font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
