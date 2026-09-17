@@ -10,7 +10,7 @@ export function AvailabilityBadge({ available }: { available: boolean }) {
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <article className="group overflow-hidden rounded-md border border-border bg-card transition duration-300 hover:-translate-y-1 hover:border-primary/50">
+    <article className="product-card group overflow-hidden rounded-md border border-border bg-card">
       <Link to="/products/$productId" params={{ productId: product.id }} className="block overflow-hidden">
         <img src={product.image} alt={product.name} loading="lazy" width={1024} height={1024} className="aspect-square w-full object-cover transition duration-500 group-hover:scale-[1.035]" />
       </Link>
