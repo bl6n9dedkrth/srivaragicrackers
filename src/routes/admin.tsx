@@ -12,8 +12,8 @@ import { formatPrice, toProduct } from "@/lib/products";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [
-    { title: "Owner Dashboard — Shubh Utsav" }, { name: "description", content: "Frontend demonstration of the Shubh Utsav product dashboard." },
-    { property: "og:title", content: "Owner Dashboard — Shubh Utsav" }, { property: "og:description", content: "Frontend demonstration of the Shubh Utsav product dashboard." },
+    { title: "Owner Dashboard — Sri Varagi Crackers" }, { name: "description", content: "Manage the Sri Varagi Crackers product catalogue." },
+    { property: "og:title", content: "Owner Dashboard — Sri Varagi Crackers" }, { property: "og:description", content: "Manage the Sri Varagi Crackers product catalogue." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ]}),
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
