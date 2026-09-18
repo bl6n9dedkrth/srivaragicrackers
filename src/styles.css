@@ -179,11 +179,21 @@
 @utility detail-enter { animation: detail-enter .6s cubic-bezier(.22,.8,.24,1) both; }
 @utility section-reveal { animation: section-reveal linear both; animation-timeline: view(); animation-range: entry 8% cover 28%; }
 @utility spark-corner { position: relative; &::after { content: "✦"; position: absolute; top: 1rem; right: 1rem; color: var(--primary); font-size: 1.1rem; text-shadow: 0 0 14px var(--primary); animation: spark-pulse 3s ease-in-out infinite; } }
+@utility collection-tile { position: relative; overflow: hidden; min-height: 15rem; border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(145deg, var(--card), color-mix(in oklab, var(--accent) 45%, var(--card))); padding: 1.75rem; transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease; &::after { content: "✦"; position: absolute; right: 1.5rem; bottom: 1.25rem; color: color-mix(in oklab, var(--primary) 65%, transparent); font-size: 2rem; text-shadow: 0 0 22px color-mix(in oklab, var(--primary) 55%, transparent); transition: transform .45s ease, color .35s ease; } &:hover { transform: translateY(-4px); border-color: color-mix(in oklab, var(--primary) 65%, transparent); box-shadow: 0 20px 50px -30px color-mix(in oklab, var(--primary) 52%, transparent); } &:hover::after { color: var(--primary); transform: rotate(45deg) scale(1.08); } }
+@utility hero-glow { box-shadow: inset 0 -4rem 7rem -5rem color-mix(in oklab, var(--primary) 55%, transparent); &::after { content: ""; position: absolute; inset: auto 0 0; height: 8rem; pointer-events: none; background: linear-gradient(transparent, color-mix(in oklab, var(--background) 90%, transparent)); } }
+@utility hero-image { animation: hero-reveal 1.4s cubic-bezier(.22,.8,.24,1) both; }
+@utility hero-content { animation: hero-content 1s .18s cubic-bezier(.22,.8,.24,1) both; }
+@utility hero-spark { position: absolute; z-index: 1; color: var(--primary-bright); pointer-events: none; text-shadow: 0 0 18px var(--primary); animation: spark-float 4.5s ease-in-out infinite; }
+@utility hero-spark-left { left: 7%; top: 28%; font-size: 1rem; }
+@utility hero-spark-right { right: 10%; bottom: 20%; font-size: 1.35rem; animation-delay: -2s; }
 
 @keyframes page-enter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes detail-enter { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes section-reveal { from { opacity: .25; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes particle-drift { from { transform: translateY(0); } to { transform: translateY(-83px); } }
 @keyframes spark-pulse { 0%,100% { opacity: .35; transform: scale(.8) rotate(0); } 50% { opacity: 1; transform: scale(1.12) rotate(45deg); } }
+@keyframes hero-reveal { from { opacity: .4; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
+@keyframes hero-content { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spark-float { 0%,100% { opacity: .28; transform: translateY(0) rotate(0); } 50% { opacity: .9; transform: translateY(-8px) rotate(35deg); } }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }

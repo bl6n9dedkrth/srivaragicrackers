@@ -19,7 +19,7 @@ export function ProductCard({ product }: { product: Product }) {
         <h2 className="mt-3 font-display text-2xl leading-tight text-card-foreground">{product.name}</h2>
         <p className="mt-2 text-lg font-semibold text-primary">{formatPrice(product.price)}</p>
         <p className="mt-3 min-h-12 text-sm leading-6 text-muted-foreground">{product.description}</p>
-        <Button asChild variant="outline" className="mt-5 w-full justify-between">
+        <Button asChild variant="outline" className="mt-5 w-full justify-between hover:shadow-gold">
           <Link to="/products/$productId" params={{ productId: product.id }}>View product <ArrowUpRight /></Link>
         </Button>
       </div>
