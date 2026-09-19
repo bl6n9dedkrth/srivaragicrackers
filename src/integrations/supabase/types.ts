@@ -61,10 +61,15 @@ export type Database = {
       }
       orders: {
         Row: {
+          address: string
+          client_token: string | null
           created_at: string
           customer_name: string
+          email: string
           id: string
           note: string
+          payment_method: string
+          payment_status: string
           phone: string
           reference: string
           status: string
@@ -72,10 +77,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          address?: string
+          client_token?: string | null
           created_at?: string
           customer_name: string
+          email?: string
           id?: string
           note?: string
+          payment_method?: string
+          payment_status?: string
           phone: string
           reference?: string
           status?: string
@@ -83,10 +93,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          address?: string
+          client_token?: string | null
           created_at?: string
           customer_name?: string
+          email?: string
           id?: string
           note?: string
+          payment_method?: string
+          payment_status?: string
           phone?: string
           reference?: string
           status?: string

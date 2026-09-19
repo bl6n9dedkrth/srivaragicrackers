@@ -8,6 +8,13 @@
       "when": 1789734233856,
       "tag": "0000_owner_auth_orders_bulk_import",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789792336615,
+      "tag": "0001_orders_checkout_fields",
+      "breakpoints": true
     }
   ]
 }
