@@ -1,0 +1,11 @@
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS email text NOT NULL DEFAULT '';
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS address text NOT NULL DEFAULT '';
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS payment_status text NOT NULL DEFAULT 'pending';
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS payment_method text NOT NULL DEFAULT 'pay_on_delivery';
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS client_token text;
+ALTER TABLE public.orders ALTER COLUMN status SET DEFAULT 'pending';
+CREATE UNIQUE INDEX IF NOT EXISTS orders_client_token_key ON public.orders (client_token) WHERE client_token IS NOT NULL;
+CREATE INDEX IF NOT EXISTS orders_created_at_idx ON public.orders (created_at DESC);
+CREATE INDEX IF NOT EXISTS order_items_order_id_idx ON public.order_items (order_id);
+CREATE INDEX IF NOT EXISTS products_category_idx ON public.products (category);
+CREATE UNIQUE INDEX IF NOT EXISTS products_sku_key ON public.products (sku);
