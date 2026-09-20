@@ -182,6 +182,11 @@ function AdminPage() {
       <h2 className="font-display text-3xl">Bulk import products</h2>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">Upload a CSV with the columns below. Rows with an existing <strong>product_code</strong> update that product; new codes create a product. Products missing from the file are left untouched.</p>
       <div className="mt-5 overflow-x-auto rounded-md border border-border bg-card p-4 text-xs"><code className="whitespace-pre text-muted-foreground">product_code,name,category,description,price,image_url,availability</code></div>
+      <ul className="mt-3 grid gap-1 text-xs text-muted-foreground">
+        <li><strong>category</strong> must be one of: Gifting, Diyas, Décor, Fragrance</li>
+        <li><strong>availability</strong> accepts TRUE, FALSE, yes, no, 1 or 0 (blank means available)</li>
+        <li><strong>image_url</strong> is optional and must start with http:// or https://</li>
+      </ul>
       <div className="mt-5 flex flex-wrap gap-3">
         <input ref={csvRef} type="file" accept=".csv,text/csv" className="sr-only" onChange={(e) => void handleCsv(e.target.files?.[0])} />
         <Button variant="festive" onClick={() => csvRef.current?.click()} disabled={importing}><Upload /> {importing ? "Importing…" : "Upload CSV"}</Button>
