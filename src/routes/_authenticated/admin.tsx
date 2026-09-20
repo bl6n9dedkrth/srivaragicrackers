@@ -194,7 +194,7 @@ function AdminPage() {
       </div>
       {summary && <div className="mt-6 rounded-md border border-border bg-card p-5" role="status">
         <h3 className="font-display text-2xl text-primary">Import summary</h3>
-        <ul className="mt-3 grid gap-1 text-sm text-muted-foreground"><li>Added: <strong className="text-foreground">{summary.added}</strong></li><li>Updated: <strong className="text-foreground">{summary.updated}</strong></li><li>Skipped: <strong className="text-foreground">{summary.skipped}</strong></li><li>Errors: <strong className="text-foreground">{summary.errors.length}</strong></li></ul>
+        <ul className="mt-3 grid gap-1 text-sm text-muted-foreground"><li>Added: <strong className="text-foreground">{summary.added}</strong></li><li>Updated: <strong className="text-foreground">{summary.updated}</strong></li><li>Skipped (invalid rows): <strong className="text-foreground">{summary.skipped}</strong></li><li>Errored while saving: <strong className="text-foreground">{summary.errored}</strong></li><li>Messages: <strong className="text-foreground">{summary.errors.length}</strong></li></ul>
         {summary.errors.length > 0 && <ul className="mt-4 grid gap-1 text-xs text-destructive">{summary.errors.slice(0, 20).map((message) => <li key={message}>{message}</li>)}</ul>}
       </div>}
     </section>}
