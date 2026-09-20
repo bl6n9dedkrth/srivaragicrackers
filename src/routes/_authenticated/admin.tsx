@@ -111,13 +111,13 @@ function AdminPage() {
     if (!file) return;
     setImporting(true); setSummary(null);
     const parsed = parseProductCsv(await file.text());
-    if (!parsed.rows.length) { setSummary({ added: 0, updated: 0, skipped: 0, errors: parsed.errors.length ? parsed.errors : ["No valid rows found."] }); setImporting(false); return; }
+    if (!parsed.rows.length) { setSummary({ added: 0, updated: 0, skipped: parsed.skipped, errored: 0, errors: parsed.errors.length ? parsed.errors : ["No valid rows found."] }); setImporting(false); return; }
     try {
       const result = await importProductsCsv({ data: { rows: parsed.rows } });
-      setSummary({ ...result, errors: [...parsed.errors, ...result.errors] });
+      setSummary({ ...result, skipped: result.skipped + parsed.skipped, errors: [...parsed.errors, ...result.errors] });
       await refresh();
     } catch (importError) {
-      setSummary({ added: 0, updated: 0, skipped: parsed.rows.length, errors: [(importError as Error).message] });
+      setSummary({ added: 0, updated: 0, skipped: parsed.skipped, errored: parsed.rows.length, errors: [...parsed.errors, (importError as Error).message] });
     }
     setImporting(false);
     if (csvRef.current) csvRef.current.value = "";
