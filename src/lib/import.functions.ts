@@ -2,10 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+const ALLOWED_CATEGORIES = ["Gifting", "Diyas", "Décor", "Fragrance"] as const;
+
 const rowSchema = z.object({
+  line: z.number().int().positive().optional().default(0),
   product_code: z.string().trim().min(1).max(64),
   name: z.string().trim().min(1).max(160),
-  category: z.string().trim().min(1).max(60),
+  category: z.enum(ALLOWED_CATEGORIES),
   description: z.string().trim().max(500).optional().default(""),
   price: z.number().nonnegative(),
   image_url: z.string().trim().max(2000).optional().default(""),
@@ -13,7 +16,10 @@ const rowSchema = z.object({
 });
 
 export type ImportRow = z.infer<typeof rowSchema>;
-export type ImportSummary = { added: number; updated: number; skipped: number; errors: string[] };
+export type ImportSummary = { added: number; updated: number; skipped: number; errored: number; errors: string[] };
+
+const slugify = (value: string) =>
+  value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "product";
 
 export const importProductsCsv = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -23,24 +29,26 @@ export const importProductsCsv = createServerFn({ method: "POST" })
     if (!isOwner) throw new Error("Forbidden");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const summary: ImportSummary = { added: 0, updated: 0, skipped: 0, errors: [] };
+    const summary: ImportSummary = { added: 0, updated: 0, skipped: 0, errored: 0, errors: [] };
 
     const valid: ImportRow[] = [];
     const seen = new Set<string>();
     data.rows.forEach((raw, index) => {
       const parsed = rowSchema.safeParse(raw);
+      const line = (raw as { line?: number } | null)?.line ?? index + 2;
       if (!parsed.success) {
         summary.skipped += 1;
-        summary.errors.push(`Row ${index + 2}: ${parsed.error.issues.map((issue) => `${issue.path.join(".")} ${issue.message}`).join("; ")}`);
+        summary.errors.push(`Row ${line}: ${parsed.error.issues.map((issue) => `${issue.path.join(".")} ${issue.message}`).join("; ")}`);
         return;
       }
-      if (seen.has(parsed.data.product_code)) {
+      const key = parsed.data.product_code.toLowerCase();
+      if (seen.has(key)) {
         summary.skipped += 1;
-        summary.errors.push(`Row ${index + 2}: duplicate product_code "${parsed.data.product_code}" in file`);
+        summary.errors.push(`Row ${line}: duplicate product_code "${parsed.data.product_code}" in file`);
         return;
       }
-      seen.add(parsed.data.product_code);
-      valid.push(parsed.data);
+      seen.add(key);
+      valid.push({ ...parsed.data, line });
     });
 
     if (!valid.length) return summary;
@@ -53,7 +61,6 @@ export const importProductsCsv = createServerFn({ method: "POST" })
     const existingCodes = new Set((existing ?? []).map((row) => row.sku));
 
     for (const row of valid) {
-      const slugBase = row.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "product";
       const payload = {
         sku: row.product_code,
         name: row.name,
@@ -64,20 +71,32 @@ export const importProductsCsv = createServerFn({ method: "POST" })
         available: row.availability,
         image_url: row.image_url ? row.image_url : null,
       };
+
       if (existingCodes.has(row.product_code)) {
         const { error } = await supabaseAdmin.from("products").update(payload).eq("sku", row.product_code);
         if (error) {
-          summary.skipped += 1;
-          summary.errors.push(`${row.product_code}: ${error.message}`);
+          summary.errored += 1;
+          summary.errors.push(`Row ${row.line} (${row.product_code}): ${error.message}`);
         } else summary.updated += 1;
-      } else {
+        continue;
+      }
+
+      const baseSlug = `${slugify(row.name)}-${slugify(row.product_code)}`;
+      let inserted = false;
+      let lastMessage = "";
+      for (let attempt = 0; attempt < 3 && !inserted; attempt += 1) {
+        const slug = attempt === 0 ? baseSlug : `${baseSlug}-${Math.random().toString(36).slice(2, 7)}`;
         const { error } = await supabaseAdmin
           .from("products")
-          .insert({ ...payload, slug: `${slugBase}-${row.product_code.toLowerCase()}`, image_key: row.image_url ? null : "gift-hamper", sort_order: 999 });
-        if (error) {
-          summary.skipped += 1;
-          summary.errors.push(`${row.product_code}: ${error.message}`);
-        } else summary.added += 1;
+          .insert({ ...payload, slug, image_key: row.image_url ? null : "gift-hamper", sort_order: 999 });
+        if (!error) { inserted = true; break; }
+        lastMessage = error.message;
+        if (error.code !== "23505" || !error.message.includes("slug")) break;
+      }
+      if (inserted) summary.added += 1;
+      else {
+        summary.errored += 1;
+        summary.errors.push(`Row ${row.line} (${row.product_code}): ${lastMessage}`);
       }
     }
 

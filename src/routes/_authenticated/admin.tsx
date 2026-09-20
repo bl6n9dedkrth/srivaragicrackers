@@ -111,13 +111,13 @@ function AdminPage() {
     if (!file) return;
     setImporting(true); setSummary(null);
     const parsed = parseProductCsv(await file.text());
-    if (!parsed.rows.length) { setSummary({ added: 0, updated: 0, skipped: 0, errors: parsed.errors.length ? parsed.errors : ["No valid rows found."] }); setImporting(false); return; }
+    if (!parsed.rows.length) { setSummary({ added: 0, updated: 0, skipped: parsed.skipped, errored: 0, errors: parsed.errors.length ? parsed.errors : ["No valid rows found."] }); setImporting(false); return; }
     try {
       const result = await importProductsCsv({ data: { rows: parsed.rows } });
-      setSummary({ ...result, errors: [...parsed.errors, ...result.errors] });
+      setSummary({ ...result, skipped: result.skipped + parsed.skipped, errors: [...parsed.errors, ...result.errors] });
       await refresh();
     } catch (importError) {
-      setSummary({ added: 0, updated: 0, skipped: parsed.rows.length, errors: [(importError as Error).message] });
+      setSummary({ added: 0, updated: 0, skipped: parsed.skipped, errored: parsed.rows.length, errors: [...parsed.errors, (importError as Error).message] });
     }
     setImporting(false);
     if (csvRef.current) csvRef.current.value = "";
@@ -182,6 +182,11 @@ function AdminPage() {
       <h2 className="font-display text-3xl">Bulk import products</h2>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">Upload a CSV with the columns below. Rows with an existing <strong>product_code</strong> update that product; new codes create a product. Products missing from the file are left untouched.</p>
       <div className="mt-5 overflow-x-auto rounded-md border border-border bg-card p-4 text-xs"><code className="whitespace-pre text-muted-foreground">product_code,name,category,description,price,image_url,availability</code></div>
+      <ul className="mt-3 grid gap-1 text-xs text-muted-foreground">
+        <li><strong>category</strong> must be one of: Gifting, Diyas, Décor, Fragrance</li>
+        <li><strong>availability</strong> accepts TRUE, FALSE, yes, no, 1 or 0 (blank means available)</li>
+        <li><strong>image_url</strong> is optional and must start with http:// or https://</li>
+      </ul>
       <div className="mt-5 flex flex-wrap gap-3">
         <input ref={csvRef} type="file" accept=".csv,text/csv" className="sr-only" onChange={(e) => void handleCsv(e.target.files?.[0])} />
         <Button variant="festive" onClick={() => csvRef.current?.click()} disabled={importing}><Upload /> {importing ? "Importing…" : "Upload CSV"}</Button>
@@ -189,7 +194,7 @@ function AdminPage() {
       </div>
       {summary && <div className="mt-6 rounded-md border border-border bg-card p-5" role="status">
         <h3 className="font-display text-2xl text-primary">Import summary</h3>
-        <ul className="mt-3 grid gap-1 text-sm text-muted-foreground"><li>Added: <strong className="text-foreground">{summary.added}</strong></li><li>Updated: <strong className="text-foreground">{summary.updated}</strong></li><li>Skipped: <strong className="text-foreground">{summary.skipped}</strong></li><li>Errors: <strong className="text-foreground">{summary.errors.length}</strong></li></ul>
+        <ul className="mt-3 grid gap-1 text-sm text-muted-foreground"><li>Added: <strong className="text-foreground">{summary.added}</strong></li><li>Updated: <strong className="text-foreground">{summary.updated}</strong></li><li>Skipped (invalid rows): <strong className="text-foreground">{summary.skipped}</strong></li><li>Errored while saving: <strong className="text-foreground">{summary.errored}</strong></li><li>Messages: <strong className="text-foreground">{summary.errors.length}</strong></li></ul>
         {summary.errors.length > 0 && <ul className="mt-4 grid gap-1 text-xs text-destructive">{summary.errors.slice(0, 20).map((message) => <li key={message}>{message}</li>)}</ul>}
       </div>}
     </section>}
