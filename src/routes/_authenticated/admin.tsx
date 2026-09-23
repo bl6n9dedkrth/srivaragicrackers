@@ -18,6 +18,12 @@ export const Route = createFileRoute("/_authenticated/admin")({
     { property: "og:title", content: "Owner Dashboard — Sri Varagi Crackers" }, { property: "og:description", content: "Manage the Sri Varagi Crackers product catalogue and orders." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ]}),
+  beforeLoad: async () => {
+    const { data, error } = await supabase.rpc("claim_owner_role");
+    if (error || !data) {
+      throw redirect({ to: "/auth" });
+    }
+  },
   component: AdminPage,
 });
 
